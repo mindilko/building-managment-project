@@ -135,19 +135,19 @@
 }
 
 .apartment-dot--available {
-  background: rgba(76, 175, 80, 0.3);
-  color: #4caf50;
+  background: rgba(76, 175, 80, 0.92);
+  color: #fff;
 }
 
 .apartment-dot--sold {
-  background: rgba(244, 67, 54, 0.3);
-  color: #f44336;
+  background: rgba(244, 67, 54, 0.92);
+  color: #fff;
 }
 
 .apartment-dot--reserved,
 .apartment-dot--in-negotiation {
-  background: rgba(33, 150, 243, 0.3);
-  color: #2196f3;
+  background: rgba(33, 150, 243, 0.92);
+  color: #fff;
 }
 
 .apartment-list h2 {
