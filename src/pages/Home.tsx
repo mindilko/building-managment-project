@@ -48,8 +48,8 @@ export default function Home() {
   return (
     <div className="home">
       <header className="home-header">
-        <h1>Building Management</h1>
-        <p>Create a new building or open an existing one.</p>
+        <h1>Building Management Tool</h1>
+        <p>Create a new building or select an existing one.</p>
       </header>
 
       <Link to="/create" className="home-create-new">
