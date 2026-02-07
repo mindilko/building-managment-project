@@ -14,9 +14,11 @@
   font-weight: 500;
 }
 
+/* Shrink-wrap to image so overlay % match the image (same as BuildingView). */
 .floor-area-tool-image-wrap {
   position: relative;
-  width: 100%;
+  display: inline-block;
+  max-width: 100%;
   max-height: 60vh;
   border-radius: 12px;
   overflow: hidden;
@@ -28,10 +30,10 @@
 
 .floor-area-tool-image {
   display: block;
-  width: 100%;
-  height: auto;
+  max-width: 100%;
   max-height: 60vh;
-  object-fit: contain;
+  width: auto;
+  height: auto;
   vertical-align: middle;
   pointer-events: none;
 }

@@ -98,6 +98,7 @@
   max-width: 100%;
 }
 
+/* Facade shrink-wraps to img so overlay % match the drawing tool (image-relative). */
 .building-facade-wrapper--image-fit .building-facade {
   position: relative;
   display: inline-block;
