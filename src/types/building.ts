@@ -1,5 +1,11 @@
 export type ApartmentStatus = 'available' | 'in_negotiation' | 'sold';
 
+/** Position of the apartment dot on the floor plan image, as % (0–100). */
+export interface DotPosition {
+  x: number;
+  y: number;
+}
+
 export interface Apartment {
   id: string;
   label: string;       // e.g. "B31"
@@ -8,6 +14,8 @@ export interface Apartment {
   area: number;       // m²
   status: ApartmentStatus;
   rooms?: string;     // e.g. "2+1"
+  /** Optional: position of the green circle on the floor plan image (%). If not set, a default layout is used. */
+  dotPosition?: DotPosition;
 }
 
 /** Rectangle as % of image (0–100). Used for custom floor button position/size. */

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getBuildingById, getFloor, updateApartmentStatus } from '../lib/storage';
-import type { ApartmentStatus } from '../types/building';
+import { getBuildingById, getFloor, updateApartmentStatus, updateApartmentDotPosition } from '../lib/storage';
+import type { ApartmentStatus, DotPosition } from '../types/building';
 import './FloorPlan.css';
 
 const STATUS_OPTIONS: ApartmentStatus[] = ['available', 'in_negotiation', 'sold'];
@@ -25,11 +25,24 @@ function normalizeStatus(s: string): ApartmentStatus {
   return s === 'reserved' ? 'in_negotiation' : (s as ApartmentStatus);
 }
 
+/** Default position for a dot by index when no dotPosition is set. */
+function defaultDotPosition(i: number): { x: number; y: number } {
+  return {
+    x: 15 + (i % 4) * 25,
+    y: 20 + Math.floor(i / 4) * 30,
+  };
+}
+
 export default function FloorPlan() {
   const { buildingId, floorNumber } = useParams<{ buildingId: string; floorNumber: string }>();
   const floorNum = floorNumber ? parseInt(floorNumber, 10) : NaN;
   const [building, setBuilding] = useState(() => (buildingId ? getBuildingById(buildingId) : undefined));
   const floor = building && !isNaN(floorNum) ? getFloor(building.id, floorNum) : undefined;
+  const dotsContainerRef = useRef<HTMLDivElement>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragPosition, setDragPosition] = useState<DotPosition | null>(null);
+  const dragPositionRef = useRef<DotPosition | null>(null);
+  dragPositionRef.current = dragPosition;
 
   useEffect(() => {
     if (buildingId) setBuilding(getBuildingById(buildingId));
@@ -40,6 +53,44 @@ export default function FloorPlan() {
     updateApartmentStatus(buildingId, floor.floorNumber, apartmentId, status);
     setBuilding(getBuildingById(buildingId));
   };
+
+  const getPercentFromEvent = useCallback((clientX: number, clientY: number): DotPosition => {
+    const el = dotsContainerRef.current;
+    if (!el) return { x: 50, y: 50 };
+    const rect = el.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100));
+    return { x, y };
+  }, []);
+
+  const handleDotMouseDown = (e: React.MouseEvent, apartmentId: string) => {
+    if ((e.target as HTMLElement).closest('select')) return;
+    e.preventDefault();
+    const apt = floor?.apartments.find((a) => a.id === apartmentId);
+    const pos = apt?.dotPosition ?? defaultDotPosition(floor!.apartments.findIndex((a) => a.id === apartmentId));
+    setDraggingId(apartmentId);
+    setDragPosition(pos);
+  };
+
+  useEffect(() => {
+    if (!draggingId) return;
+    const onMove = (e: MouseEvent) => setDragPosition(getPercentFromEvent(e.clientX, e.clientY));
+    const onUp = () => {
+      if (buildingId && floor && draggingId) {
+        const pos = dragPositionRef.current ?? { x: 50, y: 50 };
+        updateApartmentDotPosition(buildingId, floor.floorNumber, draggingId, pos);
+        setBuilding(getBuildingById(buildingId));
+      }
+      setDraggingId(null);
+      setDragPosition(null);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, [draggingId, buildingId, floor?.floorNumber, getPercentFromEvent]);
 
   if (!building || !floor) {
     return (
@@ -67,21 +118,23 @@ export default function FloorPlan() {
         <div className="floor-plan-visual">
           {floor.floorPlanImageUrl ? (
             <div
+              ref={dotsContainerRef}
               className="floor-plan-image"
               style={{ backgroundImage: `url(${floor.floorPlanImageUrl})` }}
             >
               <div className="apartment-dots">
                 {floor.apartments.map((apt, i) => {
                   const displayStatus = normalizeStatus(apt.status);
+                  const pos = draggingId === apt.id && dragPosition
+                    ? dragPosition
+                    : (apt.dotPosition ?? defaultDotPosition(i));
                   return (
                     <div
                       key={apt.id}
-                      className={`apartment-dot apartment-dot--${displayStatus}`}
-                      style={{
-                        left: `${15 + (i % 4) * 25}%`,
-                        top: `${20 + Math.floor(i / 4) * 30}%`,
-                      }}
-                      title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m²`}
+                      className={`apartment-dot apartment-dot--${displayStatus.replace('_', '-')} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
+                      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                      title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m². Drag to move.`}
+                      onMouseDown={(e) => handleDotMouseDown(e, apt.id)}
                     >
                       {apt.label}
                     </div>
@@ -90,7 +143,7 @@ export default function FloorPlan() {
               </div>
             </div>
           ) : (
-            <div className="floor-plan-placeholder">
+            <div ref={dotsContainerRef} className="floor-plan-placeholder">
               <span className="floor-plan-label">Floor {floor.floorNumber} plan</span>
               <span className="floor-plan-hint">
                 No floor plan image. Apartments are listed below.
@@ -98,15 +151,16 @@ export default function FloorPlan() {
               <div className="apartment-dots">
                 {floor.apartments.map((apt, i) => {
                   const displayStatus = normalizeStatus(apt.status);
+                  const pos = draggingId === apt.id && dragPosition
+                    ? dragPosition
+                    : (apt.dotPosition ?? defaultDotPosition(i));
                   return (
                     <div
                       key={apt.id}
-                      className={`apartment-dot apartment-dot--${displayStatus}`}
-                      style={{
-                        left: `${15 + (i % 4) * 25}%`,
-                        top: `${20 + Math.floor(i / 4) * 30}%`,
-                      }}
-                      title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m²`}
+                      className={`apartment-dot apartment-dot--${displayStatus.replace('_', '-')} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
+                      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                      title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m². Drag to move.`}
+                      onMouseDown={(e) => handleDotMouseDown(e, apt.id)}
                     >
                       {apt.label}
                     </div>

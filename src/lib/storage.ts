@@ -1,4 +1,4 @@
-import type { BuildingConfig, ApartmentStatus } from '../types/building';
+import type { BuildingConfig, ApartmentStatus, DotPosition } from '../types/building';
 
 const BUILDINGS_KEY = 'building-management-buildings';
 
@@ -50,6 +50,24 @@ export function updateApartmentStatus(
     );
     const availableCount = apartments.filter((a) => a.status === 'available').length;
     return { ...f, apartments, availableCount };
+  });
+  saveBuilding({ ...building, floors });
+}
+
+export function updateApartmentDotPosition(
+  buildingId: string,
+  floorNumber: number,
+  apartmentId: string,
+  dotPosition: DotPosition
+): void {
+  const building = getBuildingById(buildingId);
+  if (!building) return;
+  const floors = building.floors.map((f) => {
+    if (f.floorNumber !== floorNumber) return f;
+    const apartments = f.apartments.map((a) =>
+      a.id === apartmentId ? { ...a, dotPosition } : a
+    );
+    return { ...f, apartments };
   });
   saveBuilding({ ...building, floors });
 }

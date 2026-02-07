@@ -121,6 +121,17 @@
   font-weight: 600;
   border: 2px solid currentColor;
   transform: translate(0, 0);
+  cursor: grab;
+  user-select: none;
+}
+
+.apartment-dot:active {
+  cursor: grabbing;
+}
+
+.apartment-dot--dragging {
+  pointer-events: none;
+  z-index: 10;
 }
 
 .apartment-dot--available {
@@ -129,14 +140,14 @@
 }
 
 .apartment-dot--sold {
-  background: rgba(158, 158, 158, 0.3);
-  color: #9e9e9e;
+  background: rgba(244, 67, 54, 0.3);
+  color: #f44336;
 }
 
 .apartment-dot--reserved,
 .apartment-dot--in-negotiation {
-  background: rgba(255, 193, 7, 0.3);
-  color: #ffc107;
+  background: rgba(33, 150, 243, 0.3);
+  color: #2196f3;
 }
 
 .apartment-list h2 {
@@ -169,13 +180,13 @@
 }
 
 .apartment-card--sold {
-  border-left: 3px solid #9e9e9e;
+  border-left: 3px solid #f44336;
   opacity: 0.9;
 }
 
 .apartment-card--reserved,
 .apartment-card--in-negotiation {
-  border-left: 3px solid #ffc107;
+  border-left: 3px solid #2196f3;
 }
 
 .apartment-card-header {
@@ -215,15 +226,15 @@
 
 .apartment-status--sold,
 .apartment-status-select.apartment-status--sold {
-  background: rgba(158, 158, 158, 0.2);
-  color: #9e9e9e;
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
 }
 
 .apartment-status--reserved,
 .apartment-status--in-negotiation,
 .apartment-status-select.apartment-status--in-negotiation {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
 }
 
 .apartment-card-details {
