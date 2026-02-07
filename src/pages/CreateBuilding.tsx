@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FloorAreaTool from '../components/FloorAreaTool';
-import { saveBuilding, getBuildingById } from '../lib/storage';
+import { saveBuilding, getBuildingById, getBuildings } from '../lib/storage';
 import type { BuildingConfig, FloorInfo, Apartment, FloorAreaPercent } from '../types/building';
 import './CreateBuilding.css';
 
@@ -128,6 +128,10 @@ export default function CreateBuilding() {
   };
 
   const buildAndSave = () => {
+    if (isNameTaken(name || '', isEdit ? buildingId : undefined)) {
+      window.alert('A building with this name already exists. Please choose a different name.');
+      return;
+    }
     const id = isEdit && buildingId ? buildingId : `building-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const sectionLabel = name.slice(0, 1).toUpperCase() || 'A';
     const floors: FloorInfo[] = floorNumbers.map((floorNumber) => {
@@ -165,7 +169,16 @@ export default function CreateBuilding() {
     navigate(isEdit ? `/building/${id}` : '/');
   };
 
-  const canNextStep1 = name.trim().length > 0 && totalFloors >= 1;
+  const isNameTaken = (buildingName: string, excludeId?: string): boolean => {
+    const normalized = buildingName.trim().toLowerCase();
+    if (!normalized) return false;
+    return getBuildings().some(
+      (b) => b.id !== excludeId && b.name.trim().toLowerCase() === normalized
+    );
+  };
+
+  const nameError = name.trim().length > 0 && isNameTaken(name, isEdit ? buildingId : undefined);
+  const canNextStep1 = name.trim().length > 0 && totalFloors >= 1 && !nameError;
   const canNextStep2 = imageUrl.length > 0;
   const allAreasFilled = floorNumbers.every((fn) => {
     const fd = floorsData[fn];
@@ -215,7 +228,14 @@ export default function CreateBuilding() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Tower A"
                 autoFocus
+                className={nameError ? 'create-building-input--error' : undefined}
+                aria-invalid={nameError}
               />
+              {nameError && (
+                <span className="create-building-error" role="alert">
+                  A building with this name already exists. Choose a different name.
+                </span>
+              )}
             </label>
             <label className="create-building-field">
               <span>Number of floors</span>

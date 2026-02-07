@@ -77,6 +77,17 @@
   font-size: 1rem;
 }
 
+.create-building-field input.create-building-input--error {
+  border-color: #e57373;
+}
+
+.create-building-error {
+  display: block;
+  font-size: 0.85rem;
+  color: #e57373;
+  margin-top: 0.35rem;
+}
+
 .create-building-field--inline {
   flex-direction: row;
   align-items: center;
