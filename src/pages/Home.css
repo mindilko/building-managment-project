@@ -1,5 +1,5 @@
 .home {
-  min-height: 100vh;
+  min-height: calc(100vh - (5.5rem + 1px));
   padding: 2rem;
   max-width: 560px;
   margin: 0 auto;
