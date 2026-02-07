@@ -56,6 +56,7 @@ export default function CreateBuilding() {
     setLoaded(true);
   }, [isEdit, buildingId]);
 
+  /* Convert uploaded images to data URL's to avoid memory issues with local storage */
   const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
