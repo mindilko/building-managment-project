@@ -1,0 +1,254 @@
+.building-view {
+  min-height: 100vh;
+  padding: 1.5rem 2rem 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.building-view--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.building-view-header {
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.building-view-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.building-view-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.building-view-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.building-view-btn {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.building-view-btn--edit {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.building-view-btn--edit:hover {
+  background: rgba(124, 138, 255, 0.1);
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.building-view-btn--delete {
+  color: #e57373;
+  border-color: #e57373;
+}
+
+.building-view-btn--delete:hover {
+  background: rgba(229, 115, 115, 0.1);
+}
+
+.building-facade-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  max-height: 70vh;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* When using drawn shape buttons, size wrapper to the image so overlay % match the drawing tool */
+.building-facade-wrapper--image-fit {
+  aspect-ratio: auto;
+  max-height: none;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.building-facade-wrapper--image-fit .building-facade {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  max-width: 100%;
+}
+
+.building-facade-img {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.building-facade {
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--surface);
+}
+
+.building-facade--generated {
+  display: flex;
+  flex-direction: column;
+}
+
+.generated-facade {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.generated-floor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--floor-light) 0%, var(--floor-dark) 100%);
+  border-bottom: 2px solid var(--border);
+  min-height: 0;
+}
+
+.generated-floor:last-child {
+  border-bottom: none;
+}
+
+.generated-floor-number {
+  font-weight: 700;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: var(--text);
+  opacity: 0.9;
+}
+
+.floor-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.floor-overlay button {
+  pointer-events: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.floor-overlay .floor-strip {
+  width: 100%;
+}
+
+.floor-strip:hover,
+.floor-strip--hover {
+  background: rgba(255, 213, 0, 0.35);
+}
+
+.floor-shape-btn {
+  position: absolute;
+  background: rgba(255, 213, 0, 0.25);
+  border: 2px solid rgba(255, 213, 0, 0.6);
+}
+
+.floor-shape-btn:hover,
+.floor-shape-btn--hover {
+  background: rgba(255, 213, 0, 0.4);
+  border-color: rgba(255, 213, 0, 0.95);
+}
+
+.floor-tooltip {
+  position: fixed;
+  transform: translate(-50%, 8px);
+  padding: 0.75rem 1rem;
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  z-index: 100;
+  pointer-events: none;
+  min-width: 180px;
+}
+
+.floor-tooltip-row {
+  font-size: 0.9rem;
+  padding: 0.15rem 0;
+}
+
+.floor-tooltip-row:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.floor-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.floor-legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.floor-legend-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.floor-legend-available {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+@media (prefers-color-scheme: light) {
+  .floor-tooltip {
+    background: rgba(255, 255, 255, 0.98);
+  }
+}

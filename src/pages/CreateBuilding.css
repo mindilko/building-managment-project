@@ -1,0 +1,233 @@
+.create-building {
+  min-height: 100vh;
+  padding: 1.5rem 2rem 2rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.create-building-header {
+  margin-bottom: 1.5rem;
+}
+
+.create-building-back {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+}
+
+.create-building-back:hover {
+  color: var(--accent);
+}
+
+.create-building-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.create-building-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.create-building-step--current {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.create-building-step--done {
+  color: var(--text);
+}
+
+.create-building-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.create-building-p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.create-building-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.create-building-field span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.create-building-field input[type="text"],
+.create-building-field input[type="number"] {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.create-building-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.create-building-field--inline input {
+  width: 5rem;
+}
+
+.create-building-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+  display: block;
+}
+
+.create-building-upload {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  background: var(--surface);
+}
+
+.create-building-upload input {
+  display: none;
+}
+
+.create-building-upload--small {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.create-building-preview {
+  max-width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.create-building-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 40vh;
+  object-fit: contain;
+}
+
+.create-building-next,
+.create-building-btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 1rem;
+  border: none;
+}
+
+.create-building-next {
+  align-self: flex-start;
+  background: var(--accent);
+  color: #fff;
+}
+
+.create-building-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.create-building-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.create-building-btn--secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.create-building-btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.create-building-btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.create-building-btn--large {
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+.create-building-floor-block {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.create-building-floor-block strong {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.create-building-areas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.create-building-apartment-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.create-building-floor-plan-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.create-building-floor-plan-row > span {
+  min-width: 5rem;
+  font-weight: 500;
+}
+
+.create-building-floor-plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.create-building-btn--small {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.create-building-btn--danger {
+  color: #e57373;
+  border-color: #e57373;
+}
+
+.create-building-btn--danger:hover {
+  background: rgba(229, 115, 115, 0.1);
+}

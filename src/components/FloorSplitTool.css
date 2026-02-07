@@ -1,0 +1,76 @@
+.floor-split-tool {
+  width: 100%;
+}
+
+.floor-split-tool-hint {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0 0 1rem 0;
+}
+
+.floor-split-tool-image-wrap {
+  position: relative;
+  width: 100%;
+  max-height: 60vh;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: crosshair;
+  background: var(--surface);
+}
+
+.floor-split-tool-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.floor-split-tool-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 213, 0, 0.9);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.floor-split-tool-status {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.floor-split-tool-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.floor-split-tool-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.floor-split-tool-btn--secondary:hover {
+  border-color: var(--accent);
+}
+
+.floor-split-tool-btn--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.floor-split-tool-btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
