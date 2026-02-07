@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FloorAreaTool from '../components/FloorAreaTool';
 import { saveBuilding, getBuildingById, getBuildings } from '../lib/storage';
+import { compressImageFile } from '../lib/imageCompression';
 import type { BuildingConfig, FloorInfo, Apartment, FloorAreaPercent } from '../types/building';
 import './CreateBuilding.css';
 
@@ -55,12 +56,16 @@ export default function CreateBuilding() {
     setLoaded(true);
   }, [isEdit, buildingId]);
 
-  const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setImageUrl(String(reader.result));
-    reader.readAsDataURL(file);
+    try {
+      const dataUrl = await compressImageFile(file);
+      setImageUrl(dataUrl);
+    } catch {
+      window.alert('Could not process the image. Try a different file.');
+    }
+    e.target.value = '';
   };
 
   const handleFloorAreasComplete = useCallback((areas: Record<number, FloorAreaPercent>) => {
@@ -119,12 +124,16 @@ export default function CreateBuilding() {
     });
   };
 
-  const handleFloorPlanFile = (floorNumber: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFloorPlanFile = async (floorNumber: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setFloorPlanImage(floorNumber, String(reader.result));
-    reader.readAsDataURL(file);
+    try {
+      const dataUrl = await compressImageFile(file);
+      setFloorPlanImage(floorNumber, dataUrl);
+    } catch {
+      window.alert('Could not process the image. Try a different file.');
+    }
+    e.target.value = '';
   };
 
   const buildAndSave = () => {
