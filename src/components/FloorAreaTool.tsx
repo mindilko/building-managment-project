@@ -8,11 +8,13 @@ interface FloorAreaToolProps {
   onComplete: (areas: Record<number, FloorAreaPercent>) => void;
   /** When true, show "Redraw current" (only relevant when editing existing floor areas). */
   isEdit?: boolean;
+  /** Existing floor areas (e.g. when editing). When provided, these are shown and can be redrawn. */
+  initialAreas?: Record<number, FloorAreaPercent>;
 }
 
-export default function FloorAreaTool({ imageUrl, floorNumbers, onComplete, isEdit = false }: FloorAreaToolProps) {
+export default function FloorAreaTool({ imageUrl, floorNumbers, onComplete, isEdit = false, initialAreas = {} }: FloorAreaToolProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [areas, setAreas] = useState<Record<number, FloorAreaPercent>>({});
+  const [areas, setAreas] = useState<Record<number, FloorAreaPercent>>(initialAreas);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);

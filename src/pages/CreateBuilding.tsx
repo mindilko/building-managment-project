@@ -292,6 +292,11 @@ export default function CreateBuilding() {
               floorNumbers={floorNumbers}
               onComplete={handleFloorAreasComplete}
               isEdit={isEdit}
+              initialAreas={isEdit ? floorNumbers.reduce<Record<number, FloorAreaPercent>>((acc, fn) => {
+                const a = floorsData[fn]?.areaPercent;
+                if (a) acc[fn] = a;
+                return acc;
+              }, {}) : undefined}
             />
             <div className="create-building-row">
               <button type="button" className="create-building-btn create-building-btn--secondary" onClick={() => setStep(2)}>
