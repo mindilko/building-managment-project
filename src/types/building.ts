@@ -14,7 +14,7 @@ export interface Apartment {
   area: number;       // m²
   status: ApartmentStatus;
   rooms?: string;     // e.g. "2+1"
-  /** Optional: position of the green circle on the floor plan image (%). If not set, a default layout is used. */
+  /** Optional: position of the circle's on the floor plan image (%). If not set, a default layout is used. */
   dotPosition?: DotPosition;
 }
 
@@ -31,7 +31,7 @@ export interface FloorInfo {
   section: string;
   availableCount: number;
   apartments: Apartment[];
-  /** Optional floor plan image URL (e.g. blueprint). If not set, a placeholder with apartment list is shown. */
+  /** Optional floor plan image URL. If not set, a placeholder with apartment list is shown. */
   floorPlanImageUrl?: string;
   /** Optional: custom button shape/position on building image (%). If set, this floor uses a drawn shape instead of a splitter strip. */
   areaPercent?: FloorAreaPercent;

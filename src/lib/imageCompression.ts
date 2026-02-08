@@ -1,5 +1,5 @@
 /**
- * Resize and compress an image file for storage (e.g. in localStorage).
+ * Resize and compress an image file for storage (in localStorage).
  * Returns a JPEG data URL to keep payload small and avoid quota errors.
  */
 const DEFAULT_MAX_WIDTH = 1200;

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getParkingById, deleteParking } from '../lib/parkingStorage';
-import type { ParkingSpace } from '../types/parking';
 import './BuildingView.css';
 
 export default function ParkingView() {

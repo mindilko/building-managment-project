@@ -6,9 +6,7 @@ interface FloorAreaToolProps {
   imageUrl: string;
   floorNumbers: number[];
   onComplete: (areas: Record<number, FloorAreaPercent>) => void;
-  /** When true, show "Redraw current" (only relevant when editing existing floor areas). */
   isEdit?: boolean;
-  /** Existing floor areas (e.g. when editing). When provided, these are shown and can be redrawn. */
   initialAreas?: Record<number, FloorAreaPercent>;
 }
 
@@ -23,7 +21,6 @@ export default function FloorAreaTool({ imageUrl, floorNumbers, onComplete, isEd
   const currentFloor = floorNumbers[currentIndex];
   const isLast = currentIndex >= floorNumbers.length - 1;
 
-  /** Use the image element's rect so percentages are relative to the visible image, not the container (avoids letterboxing offset). */
   const getPercent = useCallback((clientX: number, clientY: number) => {
     const img = imageRef.current;
     if (!img) return { x: 0, y: 0 };

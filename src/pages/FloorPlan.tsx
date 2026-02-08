@@ -20,12 +20,10 @@ const statusClass: Record<string, string> = {
   reserved: 'apartment-card--in-negotiation',
 };
 
-/** Normalize legacy 'reserved' to 'in_negotiation' for display and edit. */
 function normalizeStatus(s: string): ApartmentStatus {
   return s === 'reserved' ? 'in_negotiation' : (s as ApartmentStatus);
 }
 
-/** Default position for a dot by index when no dotPosition is set. */
 function defaultDotPosition(i: number): { x: number; y: number } {
   return {
     x: 15 + (i % 4) * 25,

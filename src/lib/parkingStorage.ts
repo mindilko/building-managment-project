@@ -1,4 +1,5 @@
-import type { ParkingConfig, ParkingStatus, DotPosition } from '../types/parking';
+import type { ParkingConfig, ParkingStatus } from '../types/parking';
+import type { DotPosition } from '../types/building';
 
 const PARKINGS_KEY = 'building-management-parkings';
 
