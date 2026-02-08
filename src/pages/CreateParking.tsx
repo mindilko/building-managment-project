@@ -20,7 +20,6 @@ export default function CreateParking() {
   const [sectionPlanImages, setSectionPlanImages] = useState<Record<number, string>>({});
   const [sectionSpaceCounts, setSectionSpaceCounts] = useState<Record<number, number>>({});
   const [loaded, setLoaded] = useState(!isEdit);
-  /** Captured when leaving step 5 so Save uses the exact counts the user entered. */
   const savedSectionNumbersRef = useRef<number[]>([]);
   const savedSpaceCountsRef = useRef<Record<number, number>>({});
 
@@ -113,7 +112,7 @@ export default function CreateParking() {
     sections.forEach((sec, sectionIndex) => {
       const count = Math.max(0, Math.min(200, sec.spaceCount));
       for (let i = 0; i < count; i++) {
-        const label = `P${i + 1}`; // Per-section: P1, P2, ... P(count)
+        const label = `P${i + 1}`; // Per-section (count)
         const existingSpace = existing?.spaces.find(
           (s) => s.sectionIndex === sectionIndex && s.label === label
         );
