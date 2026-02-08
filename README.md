@@ -1,13 +1,26 @@
 # Building Management
 
-A React app to browse buildings by floor and view apartment availability. Click a building → click a floor → see apartments on that floor.
+A React app to manage **buildings** (floors and apartments) and **parkings** (sections and spaces). Data is stored in the browser (localStorage).
 
 ## Quick start
 
 - `npm install` then `npm run dev`
-- Open the app, choose a building, click a floor to see its apartments.
+- **Buildings:** Open the app → “Create new building” or pick an existing one → click a floor → see apartments and their status (Available / In negotiation / Sold). You can drag apartment dots on floor plans and change status.
+- **Parkings:** “Create new parking” or pick an existing one → draw sections on the overview image → add a plan image per section → set space count per section. Open a section to manage space circles and statuses (same as apartments).
 
-## Adding more buildings and images
+## Buildings
+
+- **Create/Edit:** Name, number of floors, upload facade image, draw floor areas on the image, set apartments per floor and sizes, optionally add floor plan images per floor. Edit and delete from the home page or building view.
+- **View:** Click a building to see the facade; click a floor to open the floor plan. Each floor can show a custom floor plan image with draggable apartment dots (green/blue/red by status). Apartment status can be changed on the floor plan or in the list below.
+- **Data:** Stored under `building-management-buildings` in localStorage. Images are compressed before saving to reduce quota usage.
+
+## Parkings
+
+- **Create/Edit:** Name → upload **overview** image (big picture of the parking) → **draw sections** on that image (as many rectangles as you want) → upload one **plan image per section** (used for placing circles) → set **number of parking spaces per section** → save. Edit and delete from the home page or parking view.
+- **View:** Click a parking to see the overview image with section areas. Click a section (or a “Section N” button) to open that section’s **plan**: same image you uploaded for that section, with draggable circles per space and status (Available / In negotiation / Sold), like apartments.
+- **Data:** Stored under `building-management-parkings` in localStorage. Overview and plan images are compressed before saving.
+
+## Adding more buildings (via config)
 
 - **Buildings** – Edit `src/config/buildings.ts`. Add a new object to the `buildings` array with `id`, `name`, `sectionLabel`, `floorCount`, and `floors` (each floor has `floorNumber`, `section`, `availableCount`, `apartments`).
 - **Building facade image** – Set `imageUrl` on a building (e.g. `imageUrl: '/building-facade.jpg'`) and put the image in `public/`. If you omit `imageUrl`, a generated numbered facade is shown.
