@@ -4,6 +4,7 @@ import ParkingAreaTool from '../components/ParkingAreaTool';
 import { saveParking, getParkingById, getParkings } from '../lib/parkingStorage';
 import { compressImageFile } from '../lib/imageCompression';
 import { defaultDotPosition } from '../lib/dotPosition';
+import { plural } from '../lib/utils';
 import type { ParkingConfig, ParkingSpace, ParkingSection, ParkingAreaPercent } from '../types/parking';
 import './CreateBuilding.css';
 
@@ -95,12 +96,13 @@ export default function CreateParking() {
       window.alert('A parking with this name already exists. Please choose a different name.');
       return;
     }
-    const id = isEdit && parkingId ? parkingId : `parking-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const existing = isEdit && parkingId ? getParkingById(parkingId) : undefined;
+    const id = parkingId ?? `parking-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const existing = parkingId ? getParkingById(parkingId) : undefined;
 
     // Use counts captured when leaving step 5 so we save exactly what the user entered
-    const numbersToUse = savedSectionNumbersRef.current.length > 0 ? savedSectionNumbersRef.current : sectionNumbers;
-    const countsToUse = savedSectionNumbersRef.current.length > 0 ? savedSpaceCountsRef.current : sectionSpaceCounts;
+    const haveSaved = savedSectionNumbersRef.current.length > 0;
+    const numbersToUse = haveSaved ? savedSectionNumbersRef.current : sectionNumbers;
+    const countsToUse = haveSaved ? savedSpaceCountsRef.current : sectionSpaceCounts;
 
     const sections: ParkingSection[] = numbersToUse.map((sn) => ({
       area: sectionAreas[sn],
@@ -286,7 +288,7 @@ export default function CreateParking() {
                 />
               </label>
             ))}
-            <p className="create-building-p">Total: {totalSpaces} space{totalSpaces !== 1 ? 's' : ''}.</p>
+            <p className="create-building-p">Total: {totalSpaces} {plural(totalSpaces, 'space')}.</p>
             <div className="create-building-row">
               <button type="button" className="create-building-btn create-building-btn--secondary" onClick={() => setStep(4)}>
                 Back

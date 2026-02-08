@@ -2,47 +2,35 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getBuildings, deleteBuilding } from '../lib/storage';
 import { getParkings, deleteParking } from '../lib/parkingStorage';
-import type { BuildingConfig } from '../types/building';
-import type { ParkingConfig } from '../types/parking';
+import { plural } from '../lib/utils';
 import './Home.css';
 
 type SortOption = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc';
 
 function formatCreatedAt(createdAt: number | undefined): string {
-  if (createdAt == null || createdAt === 0) return '';
+  if (!createdAt) return '';
   return new Date(createdAt).toLocaleString(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
 }
 
-function sortBuildings(buildings: BuildingConfig[], sortBy: SortOption): BuildingConfig[] {
-  const sorted = [...buildings];
+function sortByOption<T>(
+  items: T[],
+  sortBy: SortOption,
+  getCreatedAt: (item: T) => number | undefined,
+  getName: (item: T) => string
+): T[] {
+  const sorted = [...items];
   switch (sortBy) {
     case 'date-desc':
-      return sorted.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+      return sorted.sort((a, b) => (getCreatedAt(b) ?? 0) - (getCreatedAt(a) ?? 0));
     case 'date-asc':
-      return sorted.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
+      return sorted.sort((a, b) => (getCreatedAt(a) ?? 0) - (getCreatedAt(b) ?? 0));
     case 'name-asc':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      return sorted.sort((a, b) => getName(a).localeCompare(getName(b), undefined, { sensitivity: 'base' }));
     case 'name-desc':
-      return sorted.sort((a, b) => b.name.localeCompare(a.name, undefined, { sensitivity: 'base' }));
-    default:
-      return sorted;
-  }
-}
-
-function sortParkings(parkings: ParkingConfig[], sortBy: SortOption): ParkingConfig[] {
-  const sorted = [...parkings];
-  switch (sortBy) {
-    case 'date-desc':
-      return sorted.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
-    case 'date-asc':
-      return sorted.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
-    case 'name-asc':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-    case 'name-desc':
-      return sorted.sort((a, b) => b.name.localeCompare(a.name, undefined, { sensitivity: 'base' }));
+      return sorted.sort((a, b) => getName(b).localeCompare(getName(a), undefined, { sensitivity: 'base' }));
     default:
       return sorted;
   }
@@ -54,8 +42,14 @@ export default function Home() {
   const [parkingSortBy, setParkingSortBy] = useState<SortOption>('name-asc');
   const buildings = getBuildings();
   const parkings = getParkings();
-  const sortedBuildings = useMemo(() => sortBuildings(buildings, sortBy), [buildings, sortBy]);
-  const sortedParkings = useMemo(() => sortParkings(parkings, parkingSortBy), [parkings, parkingSortBy]);
+  const sortedBuildings = useMemo(
+    () => sortByOption(buildings, sortBy, (b) => b.createdAt, (b) => b.name),
+    [buildings, sortBy]
+  );
+  const sortedParkings = useMemo(
+    () => sortByOption(parkings, parkingSortBy, (p) => p.createdAt, (p) => p.name),
+    [parkings, parkingSortBy]
+  );
 
   const handleDeleteBuilding = (e: React.MouseEvent, id: string, name: string) => {
     e.preventDefault();
@@ -123,7 +117,7 @@ export default function Home() {
                 <Link to={`/building/${building.id}`} className="building-card-link">
                   <span className="building-name">{building.name}</span>
                   <span className="building-meta">
-                    {building.floorCount} floor{building.floorCount !== 1 ? 's' : ''}
+                    {building.floorCount} {plural(building.floorCount, 'floor')}
                     {formatCreatedAt(building.createdAt) && (
                       <> · {formatCreatedAt(building.createdAt)}</>
                     )}
@@ -183,7 +177,7 @@ export default function Home() {
                   <Link to={`/parking/${parking.id}`} className="building-card-link">
                     <span className="building-name">{parking.name}</span>
                     <span className="building-meta">
-                      {parking.spaces.length} space{parking.spaces.length !== 1 ? 's' : ''}
+                      {parking.spaces.length} {plural(parking.spaces.length, 'space')}
                       {formatCreatedAt(parking.createdAt) && (
                         <> · {formatCreatedAt(parking.createdAt)}</>
                       )}

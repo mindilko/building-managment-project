@@ -13,6 +13,10 @@ type FloorData = {
   areaPercent?: FloorAreaPercent;
 };
 
+function defaultFloorData(): FloorData {
+  return { apartmentCount: 0, areas: [] };
+}
+
 const STEPS = [
   'Name & floors',
   'Building image',
@@ -73,7 +77,7 @@ export default function CreateBuilding() {
     setFloorsData((prev) => {
       const next = { ...prev };
       for (let fn = 1; fn <= totalFloors; fn++) {
-        const existing = next[fn] ?? { apartmentCount: 0, areas: [] };
+        const existing = next[fn] ?? defaultFloorData();
         next[fn] = { ...existing, areaPercent: areas[fn] };
       }
       return next;
@@ -93,7 +97,7 @@ export default function CreateBuilding() {
 
   const setApartmentArea = (floorNumber: number, index: number, area: number) => {
     setFloorsData((prev) => {
-      const f = prev[floorNumber] ?? { apartmentCount: 0, areas: [] };
+      const f = prev[floorNumber] ?? defaultFloorData();
       const areas = [...(f.areas ?? [])];
       areas[index] = Math.max(0, area);
       return { ...prev, [floorNumber]: { ...f, areas } };
@@ -102,7 +106,7 @@ export default function CreateBuilding() {
 
   const removeApartment = (floorNumber: number, index: number) => {
     setFloorsData((prev) => {
-      const f = prev[floorNumber] ?? { apartmentCount: 0, areas: [] };
+      const f = prev[floorNumber] ?? defaultFloorData();
       const count = Math.max(0, (f.apartmentCount ?? 0) - 1);
       const areas = (f.areas ?? []).filter((_, i) => i !== index);
       return { ...prev, [floorNumber]: { ...f, apartmentCount: count, areas } };
@@ -112,7 +116,7 @@ export default function CreateBuilding() {
   const setFloorPlanImage = (floorNumber: number, url: string) => {
     setFloorsData((prev) => ({
       ...prev,
-      [floorNumber]: { ...(prev[floorNumber] ?? { apartmentCount: 0, areas: [] }), floorPlanImageUrl: url },
+      [floorNumber]: { ...(prev[floorNumber] ?? defaultFloorData()), floorPlanImageUrl: url },
     }));
   };
 
@@ -142,10 +146,11 @@ export default function CreateBuilding() {
       window.alert('A building with this name already exists. Please choose a different name.');
       return;
     }
-    const id = isEdit && buildingId ? buildingId : `building-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const id = buildingId ?? `building-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const existing = buildingId ? getBuildingById(buildingId) : undefined;
     const sectionLabel = name.slice(0, 1).toUpperCase() || 'A';
     const floors: FloorInfo[] = floorNumbers.map((floorNumber) => {
-      const fd = floorsData[floorNumber] ?? { apartmentCount: 0, areas: [] };
+      const fd = floorsData[floorNumber] ?? defaultFloorData();
       const apartments: Apartment[] = Array.from({ length: fd.apartmentCount }, (_, i) => ({
         id: `${id}-f${floorNumber}-a${i + 1}`,
         label: `${sectionLabel}${floorNumber}-${i + 1}`,
@@ -165,7 +170,6 @@ export default function CreateBuilding() {
       };
     });
 
-    const existing = isEdit && buildingId ? getBuildingById(buildingId) : undefined;
     const building: BuildingConfig = {
       id,
       name: name || 'Unnamed Building',
@@ -357,7 +361,7 @@ export default function CreateBuilding() {
           <>
             <p className="create-building-p">Enter the area (m²) for each apartment.</p>
             {floorNumbers.map((fn) => {
-              const fd = floorsData[fn] ?? { apartmentCount: 0, areas: [] };
+              const fd = floorsData[fn] ?? defaultFloorData();
               const count = fd.apartmentCount;
               if (count === 0) return null;
               return (

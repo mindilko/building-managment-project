@@ -23,8 +23,10 @@ export default function BuildingView() {
 
   const floorCount = building.floorCount;
   const hasCustomImage = Boolean(building.imageUrl);
-  const bounds = building.floorBoundsPercent;
   const useShapeButtons = building.floors.some((f) => f.areaPercent);
+  const isImageOnly = hasCustomImage && !useShapeButtons;
+  const isImageWithShapes = hasCustomImage && useShapeButtons;
+  const bounds = building.floorBoundsPercent;
 
   const getFloorHeightPercent = (indexFromTop: number) => {
     if (bounds && bounds.length === floorCount) {
@@ -71,12 +73,12 @@ export default function BuildingView() {
         </div>
       </header>
 
-      <div className={`building-facade-wrapper${useShapeButtons && hasCustomImage ? ' building-facade-wrapper--image-fit' : ''}`}>
+      <div className={`building-facade-wrapper${isImageWithShapes ? ' building-facade-wrapper--image-fit' : ''}`}>
         <div
-          className={`building-facade ${hasCustomImage && !useShapeButtons ? 'building-facade--image' : hasCustomImage ? 'building-facade--image building-facade--image-with-shapes' : 'building-facade--generated'}`}
-          style={hasCustomImage && !useShapeButtons ? { backgroundImage: `url(${building.imageUrl})` } : undefined}
+          className={`building-facade ${isImageOnly ? 'building-facade--image' : isImageWithShapes ? 'building-facade--image building-facade--image-with-shapes' : 'building-facade--generated'}`}
+          style={isImageOnly ? { backgroundImage: `url(${building.imageUrl})` } : undefined}
         >
-          {hasCustomImage && useShapeButtons ? (
+          {isImageWithShapes ? (
             <>
               <img src={building.imageUrl} alt={building.name} className="building-facade-img" />
               <div className="floor-overlay">
@@ -121,7 +123,7 @@ export default function BuildingView() {
           ) : null}
         </div>
 
-        {!(hasCustomImage && useShapeButtons) && (
+        {!isImageWithShapes && (
         <div className="floor-overlay">
           {building.floors
             .slice()

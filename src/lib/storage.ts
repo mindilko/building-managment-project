@@ -1,23 +1,16 @@
+import { getJsonArray, setJsonArray, replaceOrAppend } from './localStorageArray';
 import type { BuildingConfig, ApartmentStatus, DotPosition } from '../types/building';
 
 const BUILDINGS_KEY = 'building-management-buildings';
 
 export function getBuildings(): BuildingConfig[] {
-  try {
-    const raw = localStorage.getItem(BUILDINGS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as BuildingConfig[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  return getJsonArray<BuildingConfig>(BUILDINGS_KEY);
 }
 
 export function saveBuilding(building: BuildingConfig): void {
   const list = getBuildings();
-  const index = list.findIndex((b) => b.id === building.id);
-  const next = index >= 0 ? list.map((b, i) => (i === index ? building : b)) : [...list, building];
-  localStorage.setItem(BUILDINGS_KEY, JSON.stringify(next));
+  const next = replaceOrAppend(list, building, (b) => b.id === building.id);
+  setJsonArray(BUILDINGS_KEY, next);
 }
 
 export function getBuildingById(id: string): BuildingConfig | undefined {

@@ -1,24 +1,17 @@
+import { getJsonArray, setJsonArray, replaceOrAppend } from './localStorageArray';
 import type { ParkingConfig, ParkingStatus } from '../types/parking';
 import type { DotPosition } from '../types/building';
 
 const PARKINGS_KEY = 'building-management-parkings';
 
 export function getParkings(): ParkingConfig[] {
-  try {
-    const raw = localStorage.getItem(PARKINGS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as ParkingConfig[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  return getJsonArray<ParkingConfig>(PARKINGS_KEY);
 }
 
 export function saveParking(parking: ParkingConfig): void {
   const list = getParkings();
-  const index = list.findIndex((p) => p.id === parking.id);
-  const next = index >= 0 ? list.map((p, i) => (i === index ? parking : p)) : [...list, parking];
-  localStorage.setItem(PARKINGS_KEY, JSON.stringify(next));
+  const next = replaceOrAppend(list, parking, (p) => p.id === parking.id);
+  setJsonArray(PARKINGS_KEY, next);
 }
 
 export function getParkingById(id: string): ParkingConfig | undefined {

@@ -24,6 +24,10 @@ function normalizeStatus(s: string): ApartmentStatus {
   return s === 'reserved' ? 'in_negotiation' : (s as ApartmentStatus);
 }
 
+function statusClassKey(s: string): string {
+  return s.replace('_', '-');
+}
+
 function defaultDotPosition(i: number): { x: number; y: number } {
   return {
     x: 15 + (i % 4) * 25,
@@ -129,7 +133,7 @@ export default function FloorPlan() {
                   return (
                     <div
                       key={apt.id}
-                      className={`apartment-dot apartment-dot--${displayStatus.replace('_', '-')} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
+                      className={`apartment-dot apartment-dot--${statusClassKey(displayStatus)} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
                       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                       title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m². Drag to move.`}
                       onMouseDown={(e) => handleDotMouseDown(e, apt.id)}
@@ -155,7 +159,7 @@ export default function FloorPlan() {
                   return (
                     <div
                       key={apt.id}
-                      className={`apartment-dot apartment-dot--${displayStatus.replace('_', '-')} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
+                      className={`apartment-dot apartment-dot--${statusClassKey(displayStatus)} ${draggingId === apt.id ? 'apartment-dot--dragging' : ''}`}
                       style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                       title={`${apt.label} – ${statusLabels[displayStatus]} – ${apt.area} m². Drag to move.`}
                       onMouseDown={(e) => handleDotMouseDown(e, apt.id)}
@@ -186,7 +190,7 @@ export default function FloorPlan() {
                       name={`apartment-status-${apt.id}`}
                       value={displayStatus}
                       onChange={(e) => handleStatusChange(apt.id, e.target.value as ApartmentStatus)}
-                      className={`apartment-status-select apartment-status--${displayStatus}`}
+                      className={`apartment-status-select apartment-status--${statusClassKey(displayStatus)}`}
                       aria-label={`Status for apartment ${apt.label}`}
                     >
                       {STATUS_OPTIONS.map((opt) => (

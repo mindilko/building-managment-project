@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { plural } from '../lib/utils';
 import './FloorSplitTool.css';
 
 interface FloorSplitToolProps {
@@ -37,7 +38,7 @@ export default function FloorSplitTool({ imageUrl, floorCount, onComplete }: Flo
   return (
     <div className="floor-split-tool">
       <p className="floor-split-tool-hint">
-        Click where each floor meets the next (top to bottom). You’ll get one yellow strip per floor. Place {needed} boundary line{needed !== 1 ? 's' : ''}.
+        Click where each floor meets the next (top to bottom). You’ll get one yellow strip per floor. Place {needed} {plural(needed, 'boundary line', 'boundary lines')}.
       </p>
       <div
         ref={containerRef}
@@ -58,7 +59,7 @@ export default function FloorSplitTool({ imageUrl, floorCount, onComplete }: Flo
         ))}
       </div>
       <div className="floor-split-tool-status">
-        Placed {bounds.length} of {needed} boundar{bounds.length !== 1 ? 'ies' : 'y'}.
+        Placed {bounds.length} of {needed} {plural(bounds.length, 'boundary', 'boundaries')}.
       </div>
       <div className="floor-split-tool-actions">
         <button type="button" onClick={handleReset} className="floor-split-tool-btn floor-split-tool-btn--secondary">

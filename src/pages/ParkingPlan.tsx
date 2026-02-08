@@ -20,6 +20,10 @@ const statusClass: Record<string, string> = {
   sold: 'apartment-card--sold',
 };
 
+function statusClassKey(s: string): string {
+  return s.replace('_', '-');
+}
+
 export default function ParkingPlan() {
   const { parkingId, sectionIndex } = useParams<{ parkingId: string; sectionIndex: string }>();
   const sectionIdx = sectionIndex ? parseInt(sectionIndex, 10) : 0;
@@ -58,7 +62,7 @@ export default function ParkingPlan() {
     const space = spacesInSection.find((s) => s.id === spaceId);
     const i = spacesInSection.findIndex((s) => s.id === spaceId);
     const total = spacesInSection.length;
-    const pos = space?.dotPosition ?? defaultDotPosition(i >= 0 ? i : 0, total);
+    const pos = space?.dotPosition ?? defaultDotPosition(Math.max(0, i), total);
     setDraggingId(spaceId);
     setDragPosition(pos);
   };
@@ -142,7 +146,7 @@ export default function ParkingPlan() {
                 return (
                   <div
                     key={space.id}
-                    className={`apartment-dot apartment-dot--${displayStatus.replace('_', '-')} ${draggingId === space.id ? 'apartment-dot--dragging' : ''}`}
+                    className={`apartment-dot apartment-dot--${statusClassKey(displayStatus)} ${draggingId === space.id ? 'apartment-dot--dragging' : ''}`}
                     style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
                     title={`${space.label} – ${statusLabels[displayStatus]}. Drag to move.`}
                     onMouseDown={(e) => handleDotMouseDown(e, space.id)}
@@ -167,7 +171,7 @@ export default function ParkingPlan() {
                     name={`parking-status-${space.id}`}
                     value={space.status}
                     onChange={(e) => handleStatusChange(space.id, e.target.value as ParkingStatus)}
-                    className={`apartment-status-select apartment-status--${space.status.replace('_', '-')}`}
+                    className={`apartment-status-select apartment-status--${statusClassKey(space.status)}`}
                     aria-label={`Status for ${space.label}`}
                   >
                     {STATUS_OPTIONS.map((opt) => (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { getParkingById, deleteParking } from '../lib/parkingStorage';
+import { plural } from '../lib/utils';
 import './BuildingView.css';
 
 export default function ParkingView() {
@@ -20,7 +21,7 @@ export default function ParkingView() {
     );
   }
 
-  const hasSections = parking.sections && parking.sections.length > 0;
+  const hasSections = Boolean(parking.sections?.length);
   const totalSpaces = parking.spaces.length;
 
   const handleSectionClick = (sectionIndex: number) => {
@@ -50,7 +51,7 @@ export default function ParkingView() {
       <header className="building-view-header">
         <Link to="/" className="back-link">← Home</Link>
         <h1>{parking.name}</h1>
-        <p>{totalSpaces} parking space{totalSpaces !== 1 ? 's' : ''} in {parking.sections.length} section{parking.sections.length !== 1 ? 's' : ''}</p>
+        <p>{totalSpaces} parking {plural(totalSpaces, 'space')} in {parking.sections.length} {plural(parking.sections.length, 'section')}</p>
         <div className="building-view-header-actions">
           <Link to={`/parking/${parking.id}/edit`} className="building-view-btn building-view-btn--edit">Edit</Link>
           <button type="button" className="building-view-btn building-view-btn--delete" onClick={handleDelete} aria-label={`Delete ${parking.name}`}>
