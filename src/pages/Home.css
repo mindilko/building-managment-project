@@ -1,7 +1,7 @@
 .home {
   min-height: calc(100vh - (5.5rem + 1px));
   padding: 2rem;
-  max-width: 560px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -23,8 +23,17 @@
   font-size: 0.95rem;
 }
 
+.home-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
 .home-create-new {
   display: block;
+  flex: 1;
+  min-width: 160px;
   padding: 1.25rem 1.5rem;
   background: var(--accent);
   color: #fff;
@@ -32,7 +41,6 @@
   border-radius: 12px;
   font-weight: 600;
   text-decoration: none;
-  margin-bottom: 2.5rem;
   transition: opacity 0.2s, transform 0.2s;
 }
 
@@ -43,8 +51,22 @@
   color: #fff;
 }
 
+.home-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .home-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
 .home-existing {
   margin-top: 0;
+  min-width: 0;
 }
 
 .home-existing-header {

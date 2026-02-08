@@ -90,7 +90,6 @@
   background: var(--surface);
 }
 
-/* When using drawn shape buttons, size wrapper to the image so overlay % match the drawing tool */
 .building-facade-wrapper--image-fit {
   aspect-ratio: auto;
   max-height: none;
@@ -98,7 +97,6 @@
   max-width: 100%;
 }
 
-/* Facade shrink-wraps to img so overlay % match the drawing tool (image-relative). */
 .building-facade-wrapper--image-fit .building-facade {
   position: relative;
   display: inline-block;
@@ -113,7 +111,6 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  vertical-align: middle;
 }
 
 .building-facade {

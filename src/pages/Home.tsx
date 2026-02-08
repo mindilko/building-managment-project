@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getBuildings, deleteBuilding } from '../lib/storage';
+import { getParkings, deleteParking } from '../lib/parkingStorage';
 import type { BuildingConfig } from '../types/building';
+import type { ParkingConfig } from '../types/parking';
 import './Home.css';
 
 type SortOption = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc';
@@ -30,13 +32,32 @@ function sortBuildings(buildings: BuildingConfig[], sortBy: SortOption): Buildin
   }
 }
 
+function sortParkings(parkings: ParkingConfig[], sortBy: SortOption): ParkingConfig[] {
+  const sorted = [...parkings];
+  switch (sortBy) {
+    case 'date-desc':
+      return sorted.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+    case 'date-asc':
+      return sorted.sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
+    case 'name-asc':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    case 'name-desc':
+      return sorted.sort((a, b) => b.name.localeCompare(a.name, undefined, { sensitivity: 'base' }));
+    default:
+      return sorted;
+  }
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<SortOption>('name-asc');
+  const [parkingSortBy, setParkingSortBy] = useState<SortOption>('name-asc');
   const buildings = getBuildings();
+  const parkings = getParkings();
   const sortedBuildings = useMemo(() => sortBuildings(buildings, sortBy), [buildings, sortBy]);
+  const sortedParkings = useMemo(() => sortParkings(parkings, parkingSortBy), [parkings, parkingSortBy]);
 
-  const handleDeleteClick = (e: React.MouseEvent, id: string, name: string) => {
+  const handleDeleteBuilding = (e: React.MouseEvent, id: string, name: string) => {
     e.preventDefault();
     e.stopPropagation();
     if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
@@ -45,20 +66,35 @@ export default function Home() {
     }
   };
 
+  const handleDeleteParking = (e: React.MouseEvent, id: string, name: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
+      deleteParking(id);
+      navigate(0);
+    }
+  };
+
   return (
     <div className="home">
       <header className="home-header">
         <h1>Building Management Tool</h1>
-        <p>Create a new building or select an existing one.</p>
+        <p>Create a new building/parking, or explore an existing one.</p>
       </header>
 
-      <Link to="/create" className="home-create-new">
-        + Create new building
-      </Link>
+      <div className="home-create-actions">
+        <Link to="/create" className="home-create-new">
+          + Create new building
+        </Link>
+        <Link to="/parking/create" className="home-create-new">
+          + Create new parking
+        </Link>
+      </div>
 
-      <section className="home-existing">
-        <div className="home-existing-header">
-          <h2>Existing buildings</h2>
+      <div className="home-sections">
+        <section className="home-existing">
+          <div className="home-existing-header">
+            <h2>Existing buildings</h2>
           {buildings.length > 0 && (
             <label className="home-sort">
               <span className="home-sort-label">Sort by</span>
@@ -102,7 +138,7 @@ export default function Home() {
                   <button
                     type="button"
                     className="building-card-btn building-card-btn--delete"
-                    onClick={(e) => handleDeleteClick(e, building.id, building.name)}
+                    onClick={(e) => handleDeleteBuilding(e, building.id, building.name)}
                     aria-label={`Delete ${building.name}`}
                   >
                     Delete
@@ -112,7 +148,66 @@ export default function Home() {
             ))}
           </div>
         )}
-      </section>
+        </section>
+
+        <section className="home-existing">
+          <div className="home-existing-header">
+            <h2>Existing parkings</h2>
+            {parkings.length > 0 && (
+              <label className="home-sort">
+                <span className="home-sort-label">Sort by</span>
+                <select
+                  value={parkingSortBy}
+                  onChange={(e) => setParkingSortBy(e.target.value as SortOption)}
+                  className="home-sort-select"
+                  aria-label="Sort parkings"
+                >
+                  <option value="date-desc">Newest first</option>
+                  <option value="date-asc">Oldest first</option>
+                  <option value="name-asc">Name A–Z</option>
+                  <option value="name-desc">Name Z–A</option>
+                </select>
+              </label>
+            )}
+          </div>
+          {parkings.length === 0 ? (
+            <p className="home-empty">No parkings yet. Create one to get started.</p>
+          ) : (
+            <div className="building-list">
+              {sortedParkings.map((parking) => (
+                <div key={parking.id} className="building-card">
+                  <Link to={`/parking/${parking.id}`} className="building-card-link">
+                    <span className="building-name">{parking.name}</span>
+                    <span className="building-meta">
+                      {parking.spaces.length} space{parking.spaces.length !== 1 ? 's' : ''}
+                      {formatCreatedAt(parking.createdAt) && (
+                        <> · {formatCreatedAt(parking.createdAt)}</>
+                      )}
+                    </span>
+                  </Link>
+                  <div className="building-card-actions">
+                    <Link
+                      to={`/parking/${parking.id}/edit`}
+                      className="building-card-btn building-card-btn--edit"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      type="button"
+                      className="building-card-btn building-card-btn--delete"
+                      onClick={(e) => handleDeleteParking(e, parking.id, parking.name)}
+                      aria-label={`Delete ${parking.name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
