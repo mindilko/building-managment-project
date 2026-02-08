@@ -96,9 +96,11 @@ export default function Home() {
           <div className="home-existing-header">
             <h2>Existing buildings</h2>
           {buildings.length > 0 && (
-            <label className="home-sort">
+            <label className="home-sort" htmlFor="home-sort-buildings">
               <span className="home-sort-label">Sort by</span>
               <select
+                id="home-sort-buildings"
+                name="sort-buildings"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 className="home-sort-select"
@@ -154,9 +156,11 @@ export default function Home() {
           <div className="home-existing-header">
             <h2>Existing parkings</h2>
             {parkings.length > 0 && (
-              <label className="home-sort">
+              <label className="home-sort" htmlFor="home-sort-parkings">
                 <span className="home-sort-label">Sort by</span>
                 <select
+                  id="home-sort-parkings"
+                  name="sort-parkings"
                   value={parkingSortBy}
                   onChange={(e) => setParkingSortBy(e.target.value as SortOption)}
                   className="home-sort-select"

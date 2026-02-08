@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getParkingById, updateParkingSpaceStatus, updateParkingSpaceDotPosition } from '../lib/parkingStorage';
+import { defaultDotPosition } from '../lib/dotPosition';
 import type { ParkingStatus } from '../types/parking';
 import type { DotPosition } from '../types/building';
 import './FloorPlan.css';
@@ -18,13 +19,6 @@ const statusClass: Record<string, string> = {
   in_negotiation: 'apartment-card--in-negotiation',
   sold: 'apartment-card--sold',
 };
-
-function defaultDotPosition(i: number): { x: number; y: number } {
-  return {
-    x: 15 + (i % 4) * 25,
-    y: 20 + Math.floor(i / 4) * 30,
-  };
-}
 
 export default function ParkingPlan() {
   const { parkingId, sectionIndex } = useParams<{ parkingId: string; sectionIndex: string }>();
@@ -63,7 +57,8 @@ export default function ParkingPlan() {
     e.preventDefault();
     const space = spacesInSection.find((s) => s.id === spaceId);
     const i = spacesInSection.findIndex((s) => s.id === spaceId);
-    const pos = space?.dotPosition ?? defaultDotPosition(i >= 0 ? i : 0);
+    const total = spacesInSection.length;
+    const pos = space?.dotPosition ?? defaultDotPosition(i >= 0 ? i : 0, total);
     setDraggingId(spaceId);
     setDragPosition(pos);
   };
@@ -140,9 +135,10 @@ export default function ParkingPlan() {
             <div className="apartment-dots">
               {spacesInSection.map((space, i) => {
                 const displayStatus = space.status;
+                const total = spacesInSection.length;
                 const pos = draggingId === space.id && dragPosition
                   ? dragPosition
-                  : (space.dotPosition ?? defaultDotPosition(i));
+                  : (space.dotPosition ?? defaultDotPosition(i, total));
                 return (
                   <div
                     key={space.id}
@@ -167,6 +163,8 @@ export default function ParkingPlan() {
                 <div className="apartment-card-header">
                   <span className="apartment-label">{space.label}</span>
                   <select
+                    id={`parking-status-${space.id}`}
+                    name={`parking-status-${space.id}`}
                     value={space.status}
                     onChange={(e) => handleStatusChange(space.id, e.target.value as ParkingStatus)}
                     className={`apartment-status-select apartment-status--${space.status.replace('_', '-')}`}

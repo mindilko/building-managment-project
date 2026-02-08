@@ -230,9 +230,11 @@ export default function CreateBuilding() {
       <div className="create-building-body">
         {step === 1 && (
           <>
-            <label className="create-building-field">
+            <label className="create-building-field" htmlFor="create-building-name">
               <span>Building name</span>
               <input
+                id="create-building-name"
+                name="building-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -247,9 +249,11 @@ export default function CreateBuilding() {
                 </span>
               )}
             </label>
-            <label className="create-building-field">
+            <label className="create-building-field" htmlFor="create-building-floors">
               <span>Number of floors</span>
               <input
+                id="create-building-floors"
+                name="floor-count"
                 type="number"
                 min={1}
                 max={50}
@@ -270,7 +274,7 @@ export default function CreateBuilding() {
           <>
             <p className="create-building-p">Upload an image of the building (facade).</p>
             <label className="create-building-upload">
-              <input type="file" accept="image/*" onChange={handleImageFile} />
+              <input id="create-building-image" name="building-image" type="file" accept="image/*" onChange={handleImageFile} />
               <span>{imageUrl ? 'Replace image' : 'Choose image'}</span>
             </label>
             {imageUrl && (
@@ -325,9 +329,11 @@ export default function CreateBuilding() {
           <>
             <p className="create-building-p">How many apartments on each floor?</p>
             {floorNumbers.map((fn) => (
-              <label key={fn} className="create-building-field create-building-field--inline">
+              <label key={fn} className="create-building-field create-building-field--inline" htmlFor={`create-building-floor-${fn}-count`}>
                 <span>Floor {fn}</span>
                 <input
+                  id={`create-building-floor-${fn}-count`}
+                  name={`floor-${fn}-apartment-count`}
                   type="number"
                   min={0}
                   max={99}
@@ -360,9 +366,11 @@ export default function CreateBuilding() {
                   <div className="create-building-areas">
                     {Array.from({ length: count }, (_, i) => (
                       <div key={i} className="create-building-apartment-row">
-                        <label className="create-building-field create-building-field--inline">
+                        <label className="create-building-field create-building-field--inline" htmlFor={`create-building-floor-${fn}-ap-${i}-area`}>
                           <span>Ap. {i + 1} (m²)</span>
                           <input
+                            id={`create-building-floor-${fn}-ap-${i}-area`}
+                            name={`floor-${fn}-apartment-${i}-area`}
                             type="number"
                             min={0}
                             step={0.1}
@@ -397,8 +405,8 @@ export default function CreateBuilding() {
               <div key={fn} className="create-building-floor-plan-row">
                 <span>Floor {fn}</span>
                 <div className="create-building-floor-plan-actions">
-                  <label className="create-building-upload create-building-upload--small">
-                    <input type="file" accept="image/*" onChange={(e) => handleFloorPlanFile(fn, e)} />
+                  <label className="create-building-upload create-building-upload--small" htmlFor={`create-building-floor-${fn}-plan`}>
+                    <input id={`create-building-floor-${fn}-plan`} name={`floor-${fn}-plan-image`} type="file" accept="image/*" onChange={(e) => handleFloorPlanFile(fn, e)} />
                     <span>{floorsData[fn]?.floorPlanImageUrl ? 'Replace plan' : 'Add plan image'}</span>
                   </label>
                   {floorsData[fn]?.floorPlanImageUrl && (

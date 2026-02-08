@@ -1,19 +1,13 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ParkingAreaTool from '../components/ParkingAreaTool';
 import { saveParking, getParkingById, getParkings } from '../lib/parkingStorage';
 import { compressImageFile } from '../lib/imageCompression';
+import { defaultDotPosition } from '../lib/dotPosition';
 import type { ParkingConfig, ParkingSpace, ParkingSection, ParkingAreaPercent } from '../types/parking';
 import './CreateBuilding.css';
 
 const STEPS = ['Name', 'Overview image', 'Draw sections', 'Plan images', 'Space count per section', 'Save'];
-
-function defaultDotPosition(i: number): { x: number; y: number } {
-  return {
-    x: 15 + (i % 4) * 25,
-    y: 20 + Math.floor(i / 4) * 30,
-  };
-}
 
 export default function CreateParking() {
   const navigate = useNavigate();
@@ -26,6 +20,9 @@ export default function CreateParking() {
   const [sectionPlanImages, setSectionPlanImages] = useState<Record<number, string>>({});
   const [sectionSpaceCounts, setSectionSpaceCounts] = useState<Record<number, number>>({});
   const [loaded, setLoaded] = useState(!isEdit);
+  /** Captured when leaving step 5 so Save uses the exact counts the user entered. */
+  const savedSectionNumbersRef = useRef<number[]>([]);
+  const savedSpaceCountsRef = useRef<Record<number, number>>({});
 
   const sectionNumbers = Object.keys(sectionAreas)
     .map(Number)
@@ -102,26 +99,31 @@ export default function CreateParking() {
     const id = isEdit && parkingId ? parkingId : `parking-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const existing = isEdit && parkingId ? getParkingById(parkingId) : undefined;
 
-    const sections: ParkingSection[] = sectionNumbers.map((sn) => ({
+    // Use counts captured when leaving step 5 so we save exactly what the user entered
+    const numbersToUse = savedSectionNumbersRef.current.length > 0 ? savedSectionNumbersRef.current : sectionNumbers;
+    const countsToUse = savedSectionNumbersRef.current.length > 0 ? savedSpaceCountsRef.current : sectionSpaceCounts;
+
+    const sections: ParkingSection[] = numbersToUse.map((sn) => ({
       area: sectionAreas[sn],
       planImageUrl: sectionPlanImages[sn] ?? '',
-      spaceCount: sectionSpaceCounts[sn] ?? 0,
+      spaceCount: countsToUse[sn] ?? 0,
     }));
 
-    let globalIndex = 0;
     const spaces: ParkingSpace[] = [];
     sections.forEach((sec, sectionIndex) => {
-      const count = Math.max(0, sec.spaceCount);
+      const count = Math.max(0, Math.min(200, sec.spaceCount));
       for (let i = 0; i < count; i++) {
-        globalIndex++;
-        const label = `P${globalIndex}`;
-        const existingSpace = existing?.spaces.find((s) => s.label === label);
+        const label = `P${i + 1}`; // Per-section: P1, P2, ... P(count)
+        const existingSpace = existing?.spaces.find(
+          (s) => s.sectionIndex === sectionIndex && s.label === label
+        );
+        const spaceId = existingSpace?.id ?? `${id}-s${sectionIndex}-${label}`;
         spaces.push({
-          id: existingSpace?.id ?? `${id}-${label}`,
+          id: spaceId,
           label,
           status: existingSpace?.status ?? 'available',
           sectionIndex,
-          dotPosition: existingSpace?.dotPosition ?? defaultDotPosition(spaces.length),
+          dotPosition: existingSpace?.dotPosition ?? defaultDotPosition(i, count),
         });
       }
     });
@@ -176,9 +178,11 @@ export default function CreateParking() {
       <div className="create-building-body">
         {step === 1 && (
           <>
-            <label className="create-building-field">
+            <label className="create-building-field" htmlFor="create-parking-name">
               <span>Parking name</span>
               <input
+                id="create-parking-name"
+                name="parking-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -197,7 +201,7 @@ export default function CreateParking() {
           <>
             <p className="create-building-p">Upload the <strong>overview</strong> image of the parking (the big picture where you will draw sections).</p>
             <label className="create-building-upload">
-              <input type="file" accept="image/*" onChange={handleOverviewImage} />
+              <input id="create-parking-overview-image" name="parking-overview-image" type="file" accept="image/*" onChange={handleOverviewImage} />
               <span>{overviewImageUrl ? 'Replace image' : 'Choose image'}</span>
             </label>
             {overviewImageUrl && (
@@ -244,8 +248,8 @@ export default function CreateParking() {
             {sectionNumbers.map((sn) => (
               <div key={sn} className="create-building-field" style={{ marginBottom: '1rem' }}>
                 <span style={{ fontWeight: 600 }}>Section {sn}</span>
-                <label className="create-building-upload" style={{ display: 'inline-block', marginTop: '0.5rem' }}>
-                  <input type="file" accept="image/*" onChange={(e) => handleSectionPlanImage(sn, e)} />
+                <label className="create-building-upload" style={{ display: 'inline-block', marginTop: '0.5rem' }} htmlFor={`create-parking-section-${sn}-plan`}>
+                  <input id={`create-parking-section-${sn}-plan`} name={`section-${sn}-plan-image`} type="file" accept="image/*" onChange={(e) => handleSectionPlanImage(sn, e)} />
                   <span>{sectionPlanImages[sn] ? 'Replace plan image' : 'Choose plan image'}</span>
                 </label>
                 {sectionPlanImages[sn] && (
@@ -270,9 +274,11 @@ export default function CreateParking() {
           <>
             <p className="create-building-p">Set the <strong>number of parking spaces</strong> for each section.</p>
             {sectionNumbers.map((sn) => (
-              <label key={sn} className="create-building-field create-building-field--inline">
+              <label key={sn} htmlFor={`parking-section-${sn}-spaces`} className="create-building-field create-building-field--inline">
                 <span>Section {sn} – spaces</span>
                 <input
+                  id={`parking-section-${sn}-spaces`}
+                  name={`section-${sn}-spaces`}
                   type="number"
                   min={0}
                   max={200}
@@ -286,7 +292,16 @@ export default function CreateParking() {
               <button type="button" className="create-building-btn create-building-btn--secondary" onClick={() => setStep(4)}>
                 Back
               </button>
-              <button type="button" className="create-building-btn create-building-btn--primary" onClick={() => setStep(6)} disabled={!allHaveSpaceCounts || totalSpaces === 0}>
+              <button
+                type="button"
+                className="create-building-btn create-building-btn--primary"
+                onClick={() => {
+                  savedSectionNumbersRef.current = [...sectionNumbers];
+                  savedSpaceCountsRef.current = { ...sectionSpaceCounts };
+                  setStep(6);
+                }}
+                disabled={!allHaveSpaceCounts || totalSpaces === 0}
+              >
                 Next
               </button>
             </div>

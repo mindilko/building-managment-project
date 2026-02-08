@@ -182,6 +182,8 @@ export default function FloorPlan() {
                   <div className="apartment-card-header">
                     <span className="apartment-label">Ap. {apt.label}</span>
                     <select
+                      id={`apartment-status-${apt.id}`}
+                      name={`apartment-status-${apt.id}`}
                       value={displayStatus}
                       onChange={(e) => handleStatusChange(apt.id, e.target.value as ApartmentStatus)}
                       className={`apartment-status-select apartment-status--${displayStatus}`}
